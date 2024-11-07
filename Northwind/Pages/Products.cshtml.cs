@@ -1,22 +1,21 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+
 
 public class ProductsModel : PageModel
 {
     public List<Product> Products { get; set; }
-
     public void OnGet()
     {
         Products = new List<Product>();
         string connectionString = "Server=localhost;Database=Northwind;User Id=sa;Password=P@ssw0rd;TrustServerCertificate=True;";
-       
+
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
             connection.Open();
-            string sql = @"SELECT p.ProductName, c.CategoryName, p.UnitPrice
-                           FROM Products p
-                           JOIN Categories c ON p.CategoryID = c.CategoryID";
+            string sql = @"SELECT p.ProductName, c.CategoryName, p.UnitPrice FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID";
             using (SqlCommand command = new SqlCommand(sql, connection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -29,6 +28,7 @@ public class ProductsModel : PageModel
                             CategoryName = reader.GetString(1),
                             UnitPrice = reader.GetDecimal(2)
                         });
+
                     }
                 }
             }
